@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MyFootballWorld — Browse & Search</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --green: #00FF87; --green-dim: #00c96a; --dark: #080C0A; --dark2: #0F1510;
+    --dark3: #161D18; --card: #111711; --border: #1e2b20; --text: #e8f0e9;
+    --muted: #5a7060; --accent: #FF4757; --gold: #FFD700;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--dark); color: var(--text); font-family: 'DM Sans', sans-serif; overflow-x: hidden; }
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    background-size: 150px; pointer-events: none; z-index: 999; opacity: 0.4;
+  }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 48px; background: rgba(8,12,10,0.9); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  Rpx; letter-spacing: 2px; color: var(--green); text-decoration: none; }
+  .logo span { color: var(--text); }
+  .nav-right { display: flex; align-items: center; gap: 24px; }
+  .nav-back { color: var(--muted); font-size: 13px; text-decoration: none; }
+  .nav-back:hover { color: var(--text); }
+  .nav-cta { background: var(--green); color: var(--dark); padding: 8px 20px; border-radius: 4px; font-weight: 700; font-size: 13px; text-decoration: none; }
+
+  /* SEARCH HERO */
+  .search-hero {
+    padding: 100px 48px 48px;
+    background: linear-gradient(180deg, #0a1a0d 0%, var(--dark) 100%);
+    border-bottom: 1px solid var(--border);
+    position: relative; overflow: hidden;
+  }
+
+  .search-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 60% 80% at 50% 0%, rgba(0,255,135,0.05) 0%, transparent 70%);
+  }
+
+  .search-hero-inner { position: relative; z-index: 1; max-width: 800px; margin: 0 auto; text-align: center; }
+
+  .search-title { font-family: 'Bebas Neue', sans-serif; font-size: 56px; letter-spacing: 2px; margin-bottom: 8px; }
+  .search-title span { color: var(--green); }
+  .search-sub { color: var(--muted); font-size: 15px; margin-bottom: 32px; }
+
+  .search-bar {
+    display: flex; align-items: center;
+    background: var(--dark3); border: 1px solid var(--border);
+    border-radius: 8px; overflow: hidden;
+    transition: border-color 0.2s;
+    max-width: 680px; margin: 0 auto;
+  }
+  .search-bar:focus-within { border-color: var(--green); box-shadow: 0 0 0 3px rgba(0,255,135,0.1); }
+
+  .search-icon { padding: 0 16px; font-size: 18px; color: var(--muted); }
+
+  .search-input {
+    flex: 1; background: transparent; border: none; outline: none;
+    color: var(--text); font-size: 16px; font-family: 'DM Sans', sans-serif;
+    padding: 16px 0;
+  }
+  .search-input::placeholder { color: var(--muted); }
+
+  .search-btn {
+    background: var(--green); color: var(--dark);
+    border: none; padding: 16px 28px; font-weight: 700; font-size: 14px;
+    cursor: pointer; transition: background 0.2s; letter-spacing: 0.5px;
+  }
+  .search-btn:hover { background: var(--green-dim); }
+
+  /* TYPE TABS */
+  .type-tabs {
+    display: flex; justify-content: center; gap: 8px; margin-top: 24px;
+  }
+
+  .type-tab {
+    background: var(--dark3); border: 1px solid var(--border);
+    color: var(--muted); padding: 8px 20px; border-radius: 40px;
+    font-size: 13px; cursor: pointer; transition: all 0.2s;
+    font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 1px;
+  }
+  .type-tab.active { background: var(--green); color: var(--dark); border-color: var(--green); font-weight: 700; }
+  .type-tab:hover:not(.active) { border-color: var(--muted); color: var(--text); }
+
+  /* MAIN LAYOUT */
+  .browse-body {
+    display: grid; grid-template-columns: 260px 1fr;
+    min-height: calc(100vh - 280px);
+  }
+
+  /* FILTERS SIDEBAR */
+  .filters-sidebar {
+    padding: 32px 24px;
+    background: var(--dark2);
+    border-right: 1px solid var(--border);
+    position: sticky; top: 80px; align-self: start;
+  }
+
+  .filter-group { margin-bottom: 28px; }
+
+  .filter-label {
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    letter-spacing: 2px; text-transform: uppercase; color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  .filter-option {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 10px; border-radius: 4px; cursor: pointer;
+    transition: background 0.15s; font-size: 13px; color: var(--muted);
+    border: 1px solid transparent;
+  }
+  .filter-option:hover { background: var(--dark3); color: var(--text); }
+  .filter-option.active { background: rgba(0,255,135,0.08); border-color: rgba(0,255,135,0.2); color: var(--green); }
+
+  .filter-check {
+    width: 16px; height: 16px; border-radius: 3px;
+    border: 1px solid var(--border); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px;
+  }
+  .filter-option.active .filter-check { background: var(--green); border-color: var(--green); color: var(--dark); }
+
+  .filter-count { margin-left: auto; font-size: 11px; font-family: 'DM Mono', monospace; }
+
+  .range-slider {
+    width: 100%; accent-color: var(--green);
+    margin-top: 8px;
+  }
+
+  .range-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; margin-top: 4px; }
+
+  .clear-filters {
+    width: 100%; background: transparent; border: 1px solid var(--border);
+    color: var(--muted); padding: 10px; border-radius: 4px; font-size: 13px;
+    cursor: pointer; transition: all 0.2s; margin-top: 8px;
+  }
+  .clear-filters:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* RESULTS */
+  .results-area { padding: 32px 40px; }
+
+  .results-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 24px;
+  }
+
+  .results-count {
+    font-size: 14px; color: var(--muted);
+  }
+  .results-count span { color: var(--text); font-weight: 600; }
+
+  .sort-select {
+    background: var(--dark3); border: 1px solid var(--border);
+    color: var(--text); padding: 8px 16px; border-radius: 4px;
+    font-size: 13px; cursor: pointer; outline: none; font-family: 'DM Sans', sans-serif;
+  }
+  .sort-select:focus { border-color: var(--green); }
+
+  /* VIEW TOGGLE */
+  .view-toggle { display: flex; gap: 4px; }
+  .view-btn {
+    background: var(--dark3); border: 1px solid var(--border);
+    color: var(--muted); padding: 8px 12px; border-radius: 4px;
+    cursor: pointer; font-size: 14px; transition: all 0.2s;
+  }
+  .view-btn.active { border-color: var(--green); color: var(--green); }
+
+  /* MATCH LIST ITEM */
+  .match-list-item {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 8px; padding: 20px 24px; margin-bottom: 12px;
+    display: grid; grid-template-columns: 1fr auto auto auto;
+    gap: 24px; align-items: center;
+    cursor: pointer; transition: all 0.25s;
+  }
+  .match-list-item:hover { border-color: rgba(0,255,135,0.3); transform: translateX(4px); }
+
+  .mli-left { }
+  .mli-league { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  .mli-teams { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 1px; display: flex; align-items: center; gap: 12px; }
+  .mli-score { color: var(--green); }
+  .mli-date { font-size: 12px; color: var(--muted); margin-top: 4px; font-family: 'DM Mono', monospace; }
+
+  .mli-rating { text-align: center; }
+  .mli-rating-val { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: var(--gold); }
+  .mli-rating-label { font-size: 10px; color: var(--muted); font-family: 'DM Mono', monospace; letter-spacing: 1px; }
+
+  .mli-watchers { text-align: center; }
+  .mli-watch-val { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--text); }
+  .mli-watch-label { font-size: 10px; color: var(--muted); font-family: 'DM Mono', monospace; letter-spacing: 1px; }
+
+  .mli-action { }
+  .mli-btn {
+    background: transparent; border: 1px solid var(--border);
+    color: var(--muted); padding: 8px 16px; border-radius: 4px;
+    font-size: 12px; cursor: pointer; transition: all 0.2s; white-space: nowrap;
+  }
+  .mli-btn:hover { border-color: var(--green); color: var(--green); }
+  .mli-btn.watched { background: rgba(0,255,135,0.08); border-color: rgba(0,255,135,0.3); color: var(--green); }
+
+  /* GRID VIEW */
+  .results-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+
+  .match-grid-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 8px; padding: 20px;
+    cursor: pointer; transition: all 0.25s;
+  }
+  .match-grid-card:hover { border-color: rgba(0,255,135,0.3); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.4); }
+
+  .mgc-league { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; display: flex; justify-content: space-between; }
+  .mgc-teams { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .mgc-team { text-align: center; }
+  .mgc-badge { font-size: 28px; margin-bottom: 4px; }
+  .mgc-name { font-size: 12px; font-weight: 600; }
+  .mgc-score { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: var(--green); letter-spacing: 4px; }
+  .mgc-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 12px; border-top: 1px solid var(--border); }
+  .mgc-rating { font-family: 'Bebas Neue', sans-serif; font-size: 24px; color: var(--gold); }
+  .mgc-tag { font-size: 10px; color: var(--muted); font-family: 'DM Mono', monospace; }
+
+  /* PAGINATION */
+  .pagination { display: flex; justify-content: center; gap: 8px; margin-top: 40px; }
+  .page-btn {
+    background: var(--dark3); border: 1px solid var(--border);
+    color: var(--muted); padding: 8px 16px; border-radius: 4px;
+    font-size: 13px; cursor: pointer; transition: all 0.2s;
+    font-family: 'DM Mono', monospace;
+  }
+  .page-btn.active { background: var(--green); color: var(--dark); border-color: var(--green); font-weight: 700; }
+  .page-btn:hover:not(.active) { border-color: var(--muted); color: var(--text); }
+
+  /* PLAYER RESULT CARD */
+  .player-result {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 8px; padding: 16px 20px; margin-bottom: 10px;
+    display: flex; align-items: center; gap: 16px;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .player-result:hover { border-color: rgba(0,255,135,0.3); transform: translateX(4px); }
+  .pr-avatar { width: 48px; height: 48px; border-radius: 50%; background: var(--dark3); border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+  .pr-info { flex: 1; }
+  .pr-name { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 1px; }
+  .pr-meta { font-size: 12px; color: var(--muted); font-family: 'DM Mono', monospace; }
+  .pr-stats { display: flex; gap: 24px; }
+  .pr-stat { text-align: center; }
+  .pr-stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 22px; color: var(--green); }
+  .pr-stat-label { font-size: 10px; color: var(--muted); font-family: 'DM Mono', monospace; letter-spacing: 1px; }
+  .pr-follow { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 8px 16px; border-radius: 4px; font-size: 12px; cursor: pointer; transition: all 0.2s; }
+  .pr-follow:hover { border-color: var(--green); color: var(--green); }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="index.html">MY<span>FOOTBALLWORLD</span></a>
+  <div class="nav-right">
+    <a href="index.html" class="nav-back">← Home</a>
+    <a href="#" class="nav-cta">Sign Up Free</a>
+  </div>
+</nav>
+
+<!-- SEARCH HERO -->
+<div class="search-hero">
+  <div class="search-hero-inner">
+    <div class="search-title">FIND ANY <span>MATCH</span></div>
+    <p class="search-sub">Search 800,000+ matches, 50,000+ players, 5,000+ clubs</p>
+
+    <div class="search-bar">
+      <div class="search-icon">🔍</div>
+      <input class="search-input" type="text" placeholder="Search matches, players, clubs, leagues..." id="searchInput"/>
+      <button class="search-btn">Search</button>
+    </div>
+
+    <div class="type-tabs">
+      <button class="type-tab active" data-type="matches">⚽ Matches</button>
+      <button class="type-tab" data-type="players">👤 Players</button>
+      <button class="type-tab" data-type="clubs">🏟️ Clubs</button>
+      <button class="type-tab" data-type="leagues">🏆 Leagues</button>
+    </div>
+  </div>
+</div>
+
+<!-- BODY -->
+<div class="browse-body">
+
+  <!-- FILTERS -->
+  <div class="filters-sidebar">
+
+    <div class="filter-group">
+      <div class="filter-label">Competition</div>
+      <div class="filter-option active" onclick="toggleFilter(this)">
+        <div class="filter-check">✓</div> Champions League
+        <span class="filter-count">12.4k</span>
+      </div>
+      <div class="filter-option" onclick="toggleFilter(this)">
+        <div class="filter-check"></div> Premier League
+        <span class="filter-count">38.2k</span>
+      </div>
+      <div class="filter-option" onclick="toggleFilter(this)">
+        <div class="filter-check"></div> La Liga
+        <span class="filter-count">31.8k</span>
+      </div>
+      <div class="filter-option" onclick="toggleFilter(this)">
+        <div class="filter-check"></div> World Cup
+        <span class="filter-count">8.9k</span>
+      </div>
+      <div class="filter-option" onclick="toggleFilter(this)">
+        <div class="filter-check"></div> Serie A
+        <span class="filter-count">29.3k</span>
+      </div>
+      <div class="filter-option" onclick="toggleFilter(this)">
+        <div class="filter-check"></div> Bundesliga
+        <span class="filter-count">27.1k</span>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <div class="filter-label">Season</div>
+      <div class="filter-option" onclick="toggleFilter(this)">
+        <div class="filter-check"></div> 2024–25
+        <span class="filter-count">4.2k</span>
+      </div>
+      <div class="filter-option" onclick="toggleFilter(this)">
+        <div class="filter-check"></div> 2023–24
+        <span class="filter-count">6.8k</span>
+      </div>
+      <div class="filter-option active" onclick="toggleFilter(this)">
+        <div class="filter-check">✓</div> 2010s
+        <span class="filter-count">82.1k</span>
+      </div>
+      <div class="filter-option" onclick="toggleFilter(this)">
+        <div class="filter-check"></div> 2000s
+        <span class="filter-count">61.4k</span>
+      </div>
+      <div class="filter-option" onclick="toggleFilter(this)">
+        <div class="filter-check"></div> 1990s
+        <span class="filter-count">24.9k</span>
+      </div>
+    </div>
+
+    <div class="filter-group">
+      <div class="filter-label">Min. Rating</div>
+      <input type="range" class="range-slider" min="1" max="10" value="7" id="ratingSlider" oninput="document.getElementById('ratingVal').textContent=this.value"/>
+      <div class="range-labels"><span>1</span><span id="ratingVal">7</span><span>10</span></div>
+    </div>
+
+    <div class="filter-group">
+      <div class="filter-label">Round</div>
+      <div class="filter-option active" onclick="toggleFilter(this)">
+        <div class="filter-check">✓</div> Finals
+        <span class="filter-count">2.1k</span>
+      </div>
+      <div class="filter-option" onclick="toggleFilter(this)">
+        <div class="filter-check"></div> Semi-Finals
+        <span class="filter-count">4.3k</span>
+      </div>
+      <div class="filter-option" onclick="toggleFilter(this)">
+        <div class="filter-check"></div> Quarter-Finals
+        <span class="filter-count">8.6k</span>
+      </div>
+      <div class="filter-option" onclick="toggleFilter(this)">
+        <div class="filter-check"></div> Group Stage
+        <span class="filter-count">41.2k</span>
+      </div>
+    </div>
+
+    <button class="clear-filters">✕ Clear Filters</button>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results-area">
+
+    <div class="results-header">
+      <div class="results-count">Showing <span>2,847</span> results</div>
+      <div style="display:flex;gap:12px;align-items:center">
+        <div class="view-toggle">
+          <button class="view-btn active" id="listViewBtn" onclick="setView('list')">☰</button>
+          <button class="view-btn" id="gridViewBtn" onclick="setView('grid')">⊞</button>
+        </div>
+        <select class="sort-select">
+          <option>Sort: Top Rated</option>
+          <option>Sort: Most Watched</option>
+          <option>Sort: Most Recent</option>
+          <option>Sort: Most Reviews</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- LIST VIEW -->
+    <div id="listView">
+      <div class="match-list-item" onclick="window.location.href='match-detail.html'"
+        <div class="mli-left">
+          <div class="mli-league">🏆 UCL Final · May 25, 2005</div>
+          <div class="mli-teams">🔴 Liverpool <span class="mli-score">3–3</span> AC Milan 🔴</div>
+          <div class="mli-date">Atatürk Stadium, Istanbul · AET (Pens 3–2)</div>
+        </div>
+        <div class="mli-rating"><div class="mli-rating-val">9.8</div><div class="mli-rating-label">Rating</div></div>
+        <div class="mli-watchers"><div class="mli-watch-val">48.2k</div><div class="mli-watch-label">Watched</div></div>
+        <div class="mli-action"><button class="mli-btn watched">✓ Watched</button></div>
+      </div>
+
+      <div class="match-list-item" onclick="window.location.href='match-detail.html'"
+        <div class="mli-left">
+          <div class="mli-league">🏆 UCL Final · May 26, 1999</div>
+          <div class="mli-teams">🔴 Man United <span class="mli-score">2–1</span> Bayern Munich 🔴</div>
+          <div class="mli-date">Camp Nou, Barcelona · 90+1' comeback</div>
+        </div>
+        <div class="mli-rating"><div class="mli-rating-val">9.7</div><div class="mli-rating-label">Rating</div></div>
+        <div class="mli-watchers"><div class="mli-watch-val">41.6k</div><div class="mli-watch-label">Watched</div></div>
+        <div class="mli-action"><button class="mli-btn">+ Watch</button></div>
+      </div>
+
+      <div class="match-list-item" onclick="window.location.href='match-detail.html'"
+        <div class="mli-left">
+          <div class="mli-league">🌍 World Cup SF · Jul 8, 2014</div>
+          <div class="mli-teams">🇩🇪 Germany <span class="mli-score">7–1</span> Brazil 🇧🇷</div>
+          <div class="mli-date">Estádio Mineirão, Belo Horizonte</div>
+        </div>
+        <div class="mli-rating"><div class="mli-rating-val">9.6</div><div class="mli-rating-label">Rating</div></div>
+        <div class="mli-watchers"><div class="mli-watch-val">39.8k</div><div class="mli-watch-label">Watched</div></div>
+        <div class="mli-action"><button class="mli-btn">+ Watch</button></div>
+      </div>
+
+      <div class="match-list-item" onclick="window.location.href='match-detail.html'"
+        <div class="mli-left">
+          <div class="mli-league">⚽ La Liga · Mar 23, 2014</div>
+          <div class="mli-teams">🔵 Barcelona <span class="mli-score">3–4</span> Real Madrid ⚪</div>
+          <div class="mli-date">Camp Nou · El Clásico</div>
+        </div>
+        <div class="mli-rating"><div class="mli-rating-val">9.5</div><div class="mli-rating-label">Rating</div></div>
+        <div class="mli-watchers"><div class="mli-watch-val">35.2k</div><div class="mli-watch-label">Watched</div></div>
+        <div class="mli-action"><button class="mli-btn">+ Watch</button></div>
+      </div>
+
+      <div class="match-list-item" onclick="window.location.href='match-detail.html'"
+        <div class="mli-left">
+          <div class="mli-league">🏆 UCL R16 · Mar 8, 2017</div>
+          <div class="mli-teams">🔵 Barcelona <span class="mli-score">6–1</span> PSG 🔵</div>
+          <div class="mli-date">Camp Nou · Greatest comeback in UCL history</div>
+        </div>
+        <div class="mli-rating"><div class="mli-rating-val">9.4</div><div class="mli-rating-label">Rating</div></div>
+        <div class="mli-watchers"><div class="mli-watch-val">33.1k</div><div class="mli-watch-label">Watched</div></div>
+        <div class="mli-action"><button class="mli-btn">+ Watch</button></div>
+      </div>
+
+      <div class="match-list-item" onclick="window.location.href='match-detail.html'"
+        <div class="mli-left">
+          <div class="mli-league">🌍 World Cup Final · Jul 13, 2014</div>
+          <div class="mli-teams">🇩🇪 Germany <span class="mli-score">1–0</span> Argentina 🇦🇷</div>
+          <div class="mli-date">Maracanã, Rio de Janeiro · AET (Götze 113')</div>
+        </div>
+        <div class="mli-rating"><div class="mli-rating-val">9.3</div><div class="mli-rating-label">Rating</div></div>
+        <div class="mli-watchers"><div class="mli-watch-val">44.7k</div><div class="mli-watch-label">Watched</div></div>
+        <div class="mli-action"><button class="mli-btn">+ Watch</button></div>
+      </div>
+    </div>
+
+    <!-- GRID VIEW (hidden) -->
+    <div id="gridView" style="display:none">
+      <div class="results-grid">
+        <div class="match-grid-card">
+          <div class="mgc-league"><span>🏆 UCL Final 2005</span><span style="color:var(--gold)">★ 9.8</span></div>
+          <div class="mgc-teams">
+            <div class="mgc-team"><div class="mgc-badge">🔴</div><div class="mgc-name">Liverpool</div></div>
+            <div class="mgc-score">3·3</div>
+            <div class="mgc-team"><div class="mgc-badge">🔴</div><div class="mgc-name">AC Milan</div></div>
+          </div>
+          <div class="mgc-footer"><span class="mgc-tag">48.2k watched</span><span class="mgc-rating">9.8</span></div>
+        </div>
+        <div class="match-grid-card">
+          <div class="mgc-league"><span>🏆 UCL Final 1999</span><span style="color:var(--gold)">★ 9.7</span></div>
+          <div class="mgc-teams">
+            <div class="mgc-team"><div class="mgc-badge">🔴</div><div class="mgc-name">Man Utd</div></div>
+            <div class="mgc-score">2·1</div>
+            <div class="mgc-team"><div class="mgc-badge">🔴</div><div class="mgc-name">Bayern</div></div>
+          </div>
+          <div class="mgc-footer"><span class="mgc-tag">41.6k watched</span><span class="mgc-rating">9.7</span></div>
+        </div>
+        <div class="match-grid-card">
+          <div class="mgc-league"><span>🌍 World Cup SF 2014</span><span style="color:var(--gold)">★ 9.6</span></div>
+          <div class="mgc-teams">
+            <div class="mgc-team"><div class="mgc-badge">🇩🇪</div><div class="mgc-name">Germany</div></div>
+            <div class="mgc-score">7·1</div>
+            <div class="mgc-team"><div class="mgc-badge">🇧🇷</div><div class="mgc-name">Brazil</div></div>
+          </div>
+          <div class="mgc-footer"><span class="mgc-tag">39.8k watched</span><span class="mgc-rating">9.6</span></div>
+        </div>
+        <div class="match-grid-card">
+          <div class="mgc-league"><span>⚽ La Liga El Clásico</span><span style="color:var(--gold)">★ 9.5</span></div>
+          <div class="mgc-teams">
+            <div class="mgc-team"><div class="mgc-badge">🔵</div><div class="mgc-name">Barcelona</div></div>
+            <div class="mgc-score">3·4</div>
+            <div class="mgc-team"><div class="mgc-badge">⚪</div><div class="mgc-name">Real Madrid</div></div>
+          </div>
+          <div class="mgc-footer"><span class="mgc-tag">35.2k watched</span><span class="mgc-rating">9.5</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PLAYER RESULTS (hidden, shown when type tab = players) -->
+    <div id="playerResults" style="display:none">
+      <div class="player-result" onclick="window.location.href='player-profile.html'"
+        <div class="pr-avatar">⚽</div>
+        <div class="pr-info">
+          <div class="pr-name">CRISTIANO RONALDO</div>
+          <div class="pr-meta">🇵🇹 Portugal · Forward · Al Nassr</div>
+        </div>
+        <div class="pr-stats">
+          <div class="pr-stat"><div class="pr-stat-val">900+</div><div class="pr-stat-label">Goals</div></div>
+          <div class="pr-stat"><div class="pr-stat-val">9.1</div><div class="pr-stat-label">Rating</div></div>
+          <div class="pr-stat"><div class="pr-stat-val">284k</div><div class="pr-stat-label">Followers</div></div>
+        </div>
+        <button class="pr-follow">+ Follow</button>
+      </div>
+      <div class="player-result" onclick="window.location.href='player-profile.html'"
+        <div class="pr-avatar">🐐</div>
+        <div class="pr-info">
+          <div class="pr-name">LIONEL MESSI</div>
+          <div class="pr-meta">🇦🇷 Argentina · Forward · Inter Miami</div>
+        </div>
+        <div class="pr-stats">
+          <div class="pr-stat"><div class="pr-stat-val">850+</div><div class="pr-stat-label">Goals</div></div>
+          <div class="pr-stat"><div class="pr-stat-val">9.3</div><div class="pr-stat-label">Rating</div></div>
+          <div class="pr-stat"><div class="pr-stat-val">312k</div><div class="pr-stat-label">Followers</div></div>
+        </div>
+        <button class="pr-follow">+ Follow</button>
+      </div>
+      <div class="player-result" onclick="window.location.href='player-profile.html'"
+        <div class="pr-avatar">🧤</div>
+        <div class="pr-info">
+          <div class="pr-name">ZINEDINE ZIDANE</div>
+          <div class="pr-meta">🇫🇷 France · Midfielder · Retired</div>
+        </div>
+        <div class="pr-stats">
+          <div class="pr-stat"><div class="pr-stat-val">220</div><div class="pr-stat-label">Goals</div></div>
+          <div class="pr-stat"><div class="pr-stat-val">9.4</div><div class="pr-stat-label">Rating</div></div>
+          <div class="pr-stat"><div class="pr-stat-val">198k</div><div class="pr-stat-label">Followers</div></div>
+        </div>
+        <button class="pr-follow">+ Follow</button>
+      </div>
+    </div>
+
+    <!-- PAGINATION -->
+    <div class="pagination">
+      <button class="page-btn active">1</button>
+      <button class="page-btn">2</button>
+      <button class="page-btn">3</button>
+      <button class="page-btn">4</button>
+      <button class="page-btn">5</button>
+      <button class="page-btn">→</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Type tabs
+  document.querySelectorAll('.type-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.type-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const type = tab.dataset.type;
+      document.getElementById('listView').style.display = type === 'matches' ? 'block' : 'none';
+      document.getElementById('gridView').style.display = 'none';
+      document.getElementById('playerResults').style.display = type === 'players' ? 'block' : 'none';
+      document.getElementById('listViewBtn').style.display = type === 'matches' ? '' : 'none';
+      document.getElementById('gridViewBtn').style.display = type === 'matches' ? '' : 'none';
+    });
+  });
+
+  // View toggle
+  function setView(v) {
+    document.getElementById('listView').style.display = v === 'list' ? 'block' : 'none';
+    document.getElementById('gridView').style.display = v === 'grid' ? 'block' : 'none';
+    document.getElementById('listViewBtn').classList.toggle('active', v === 'list');
+    document.getElementById('gridViewBtn').classList.toggle('active', v === 'grid');
+  }
+
+  // Filter toggle
+  function toggleFilter(el) {
+    el.classList.toggle('active');
+    const check = el.querySelector('.filter-check');
+    check.textContent = el.classList.contains('active') ? '✓' : '';
+  }
+
+  // MWatched btn toggle
+  document.querySelectorAll('.mli-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      btn.classList.toggle('watched');
+      btn.textContent = btn.classList.contains('watched') ? '✓ Watched' : '+ Watch';
+    });
+  });
+</script>
+</body>
+</html>

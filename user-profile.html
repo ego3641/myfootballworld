@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MyFootballWorld — My Profile</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --green: #00FF87; --green-dim: #00c96a; --dark: #080C0A; --dark2: #0F1510;
+    --dark3: #161D18; --card: #111711; --border: #1e2b20; --text: #e8f0e9;
+    --muted: #5a7060; --accent: #FF4757; --gold: #FFD700;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--dark); color: var(--text); font-family: 'DM Sans', sans-serif; overflow-x: hidden; }
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    background-size: 150px; pointer-events: none; z-index: 999; opacity: 0.4;
+  }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 48px; background: rgba(8,12,10,0.9); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px; color: var(--green); text-decoration: none; white-space: nowrap; flex-shrink: 0; }
+  .logo span { color: var(--text); }
+  .nav-right { display: flex; align-items: center; gap: 20px; }
+  .nav-link { color: var(--muted); font-size: 13px; text-decoration: none; transition: color 0.2s; }
+  .nav-link:hover { color: var(--text); }
+  .nav-link.active { color: var(--green); }
+
+  /* PROFILE BANNER */
+  .profile-banner {
+    padding-top: 80px;
+    height: 280px;
+    background: linear-gradient(135deg, #091a0c 0%, #0f2212 40%, #070f08 100%);
+    position: relative; overflow: hidden;
+  }
+
+  .banner-pattern {
+    position: absolute; inset: 0; opacity: 0.04;
+    background-image: repeating-linear-gradient(
+      45deg, var(--green) 0px, var(--green) 1px,
+      transparent 1px, transparent 40px
+    );
+  }
+
+  .banner-glow {
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 50% 80% at 30% 100%, rgba(0,255,135,0.08) 0%, transparent 60%);
+  }
+
+  /* PROFILE HEADER */
+  .profile-header {
+    position: relative; z-index: 1;
+    padding: 0 48px;
+    margin-top: -60px;
+    display: flex; align-items: flex-end; gap: 32px;
+    padding-bottom: 0;
+  }
+
+  .profile-avatar-wrap { position: relative; flex-shrink: 0; }
+
+  .profile-avatar {
+    width: 120px; height: 120px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--green-dim), var(--green));
+    border: 4px solid var(--dark);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bebas Neue', sans-serif; font-size: 48px; color: var(--dark);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+  }
+
+  .profile-level {
+    position: absolute; bottom: 0; right: 0;
+    background: var(--gold); color: #000;
+    font-family: 'Bebas Neue', sans-serif; font-size: 13px;
+    padding: 2px 8px; border-radius: 10px;
+    border: 2px solid var(--dark);
+    letter-spacing: 1px;
+  }
+
+  .profile-info { flex: 1; padding-bottom: 20px; }
+
+  .profile-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px; letter-spacing: 2px; line-height: 1; margin-bottom: 4px;
+  }
+
+  .profile-handle { font-size: 14px; color: var(--muted); font-family: 'DM Mono', monospace; margin-bottom: 12px; }
+
+  .profile-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  .badge {
+    display: flex; align-items: center; gap: 5px;
+    background: var(--dark3); border: 1px solid var(--border);
+    padding: 4px 10px; border-radius: 3px; font-size: 12px; color: var(--muted);
+  }
+  .badge.gold { border-color: rgba(255,215,0,0.3); color: var(--gold); }
+  .badge.green { border-color: rgba(0,255,135,0.3); color: var(--green); }
+
+  .profile-header-right { padding-bottom: 20px; display: flex; gap: 10px; }
+
+  .btn-edit {
+    background: var(--dark3); border: 1px solid var(--border);
+    color: var(--muted); padding: 10px 20px; border-radius: 4px;
+    font-size: 13px; cursor: pointer; transition: all 0.2s;
+  }
+  .btn-edit:hover { border-color: var(--green); color: var(--green); }
+
+  /* STATS STRIP */
+  .stats-strip {
+    background: var(--dark2); border-bottom: 1px solid var(--border);
+    border-top: 1px solid var(--border);
+    padding: 0 48px;
+    display: flex; gap: 0;
+  }
+
+  .strip-stat {
+    padding: 20px 40px 20px 0;
+    border-right: 1px solid var(--border);
+    margin-right: 40px;
+  }
+  .strip-stat:last-child { border-right: none; margin-right: 0; }
+
+  .strip-val { font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: var(--green); line-height: 1; }
+  .strip-label { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; letter-spacing: 1px; text-transform: uppercase; margin-top: 3px; }
+
+  /* MAIN BODY */
+  .profile-body { display: grid; grid-template-columns: 1fr 300px; }
+  .profile-main { padding: 40px 48px; border-right: 1px solid var(--border); }
+  .profile-sidebar { padding: 40px 28px; background: var(--dark2); }
+
+  /* TABS */
+  .tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 36px; }
+  .tab { padding: 12px 20px; font-size: 11px; font-weight: 600; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; letter-spacing: 1.5px; text-transform: uppercase; font-family: 'DM Mono', monospace; background: none; border-left: none; border-right: none; border-top: none; }
+  .tab.active { color: var(--green); border-bottom-color: var(--green); }
+  .tab:hover { color: var(--text); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* ACTIVITY FEED */
+  .activity-item {
+    display: flex; align-items: flex-start; gap: 16px;
+    padding: 16px 0; border-bottom: 1px solid rgba(30,43,32,0.5);
+  }
+
+  .activity-avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--green-dim), var(--green));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bebas Neue', sans-serif; font-size: 16px; color: var(--dark);
+    flex-shrink: 0;
+  }
+
+  .activity-body { flex: 1; }
+  .activity-text { font-size: 14px; line-height: 1.6; }
+  .activity-text strong { color: var(--green); }
+  .activity-time { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; margin-top: 4px; }
+
+  .activity-card {
+    background: var(--dark3); border: 1px solid var(--border);
+    border-radius: 6px; padding: 12px 14px; margin-top: 10px;
+    display: flex; align-items: center; gap: 12px;
+    font-size: 13px;
+  }
+  .activity-card-icon { font-size: 20px; }
+  .activity-card-title { font-weight: 600; }
+  .activity-card-sub { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; }
+  .activity-card-rating { font-family: 'Bebas Neue', sans-serif; font-size: 24px; color: var(--gold); margin-left: auto; }
+
+  /* WATCHLIST */
+  .watchlist-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+
+  .wl-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 8px; padding: 16px; cursor: pointer;
+    transition: all 0.2s; position: relative; overflow: hidden;
+  }
+  .wl-card::before {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 3px; height: 100%; background: var(--green);
+    transform: scaleY(0); transform-origin: top; transition: transform 0.3s;
+  }
+  .wl-card:hover { border-color: rgba(0,255,135,0.25); }
+  .wl-card:hover::before { transform: scaleY(1); }
+
+  .wl-league { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .wl-teams { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 1px; margin-bottom: 6px; }
+  .wl-score { color: var(--green); }
+  .wl-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+  .wl-rating { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--gold); }
+  .wl-watched { font-size: 10px; color: var(--green); font-family: 'DM Mono', monospace; background: rgba(0,255,135,0.08); padding: 2px 6px; border-radius: 2px; }
+
+  /* LISTS TAB */
+  .list-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 8px; padding: 20px; margin-bottom: 12px;
+    cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 16px;
+  }
+  .list-card:hover { border-color: rgba(0,255,135,0.25); transform: translateX(4px); }
+
+  .list-icon { font-size: 28px; flex-shrink: 0; }
+  .list-info { flex: 1; }
+  .list-title { font-weight: 600; font-size: 15px; margin-bottom: 3px; }
+  .list-meta { font-size: 12px; color: var(--muted); font-family: 'DM Mono', monospace; }
+  .list-count { font-family: 'Bebas Neue', sans-serif; font-size: 28px; color: var(--green); }
+
+  /* SIDEBAR */
+  .sidebar-section { margin-bottom: 28px; }
+  .sidebar-title { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 1px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .sidebar-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  .fav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 0; border-bottom: 1px solid rgba(30,43,32,0.4);
+    cursor: pointer; transition: background 0.15s; border-radius: 4px;
+  }
+  .fav-item:hover { background: var(--dark3); padding: 10px 8px; }
+  .fav-icon { font-size: 20px; }
+  .fav-name { flex: 1; font-size: 13px; font-weight: 500; }
+  .fav-type { font-size: 10px; color: var(--muted); font-family: 'DM Mono', monospace; }
+
+  /* XP BAR */
+  .xp-section { margin-bottom: 28px; }
+  .xp-header { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 12px; }
+  .xp-level { font-family: 'Bebas Neue', sans-serif; font-size: 16px; color: var(--gold); }
+  .xp-next { color: var(--muted); font-family: 'DM Mono', monospace; font-size: 11px; }
+  .xp-track { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .xp-fill { height: 100%; background: linear-gradient(90deg, var(--green-dim), var(--gold)); border-radius: 3px; width: 68%; transition: width 1s ease; }
+
+  /* ACHIEVEMENTS */
+  .achievements-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .ach {
+    background: var(--dark3); border: 1px solid var(--border);
+    border-radius: 6px; padding: 10px 6px; text-align: center;
+    transition: all 0.2s;
+  }
+  .ach:hover { border-color: rgba(255,215,0,0.3); }
+  .ach.locked { opacity: 0.3; }
+  .ach-icon { font-size: 22px; margin-bottom: 4px; }
+  .ach-name { font-size: 9px; color: var(--muted); font-family: 'DM Mono', monospace; letter-spacing: 0.5px; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="index.html">MY<span>FOOTBALLWORLD</span></a>
+  <div class="nav-right">
+    <a href="browse-search.html" class="nav-link">Browse</a>
+    <a href="#" class="nav-link active">Profile</a>
+    <a href="index.html" class="nav-link">Home</a>
+  </div>
+</nav>
+
+<!-- BANNER -->
+<div class="profile-banner">
+  <div class="banner-pattern"></div>
+  <div class="banner-glow"></div>
+</div>
+
+<!-- PROFILE HEADER -->
+<div style="background: var(--dark); border-bottom: 1px solid var(--border);">
+  <div class="profile-header">
+    <div class="profile-avatar-wrap">
+      <div class="profile-avatar">JD</div>
+      <div class="profile-level">LVL 42</div>
+    </div>
+    <div class="profile-info">
+      <div class="profile-name">João Diogo</div>
+      <div class="profile-handle">@joaodiogo · Member since 2023</div>
+      <div class="profile-badges">
+        <div class="badge gold">🏆 Top Reviewer</div>
+        <div class="badge green">⚡ Early Adopter</div>
+        <div class="badge">🇵🇹 Portuguese Fan</div>
+        <div class="badge gold">⭐ 500+ Matches</div>
+      </div>
+    </div>
+    <div class="profile-header-right">
+      <button class="btn-edit">✏️ Edit Profile</button>
+    </div>
+  </div>
+</div>
+
+<!-- STATS STRIP -->
+<div class="stats-strip">
+  <div class="strip-stat">
+    <div class="strip-val">847</div>
+    <div class="strip-label">Matches Watched</div>
+  </div>
+  <div class="strip-stat">
+    <div class="strip-val">312</div>
+    <div class="strip-label">Rated</div>
+  </div>
+  <div class="strip-stat">
+    <div class="strip-val">29</div>
+    <div class="strip-label">Lists Created</div>
+  </div>
+  <div class="strip-stat">
+    <div class="strip-val">184</div>
+    <div class="strip-label">Reviews</div>
+  </div>
+  <div class="strip-stat">
+    <div class="strip-val">1.2k</div>
+    <div class="strip-label">Followers</div>
+  </div>
+  <div class="strip-stat">
+    <div class="strip-val">8.4</div>
+    <div class="strip-label">Avg Rating Given</div>
+  </div>
+</div>
+
+<!-- BODY -->
+<div class="profile-body">
+  <div class="profile-main">
+
+    <div class="tabs">
+      <button class="tab active" data-tab="activity">Activity</button>
+      <button class="tab" data-tab="watchlist">Watchlist</button>
+      <button class="tab" data-tab="lists">My Lists</button>
+    </div>
+
+    <!-- ACTIVITY -->
+    <div class="tab-content active" id="tab-activity">
+
+      <div class="activity-item">
+        <div class="activity-avatar">JD</div>
+        <div class="activity-body">
+          <div class="activity-text">Rated <strong>UCL Final 2005 — Istanbul</strong> a <strong style="color:var(--gold)">10/10</strong></div>
+          <div class="activity-time">2 hours ago</div>
+          <div class="activity-card">
+            <div class="activity-card-icon">🏆</div>
+            <div><div class="activity-card-title">Liverpool vs AC Milan</div><div class="activity-card-sub">UCL Final · May 25, 2005</div></div>
+            <div class="activity-card-rating">10</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="activity-item">
+        <div class="activity-avatar">JD</div>
+        <div class="activity-body">
+          <div class="activity-text">Added <strong>Dortmund vs Malaga 2013</strong> to watched list</div>
+          <div class="activity-time">5 hours ago</div>
+          <div class="activity-card">
+            <div class="activity-card-icon">⚽</div>
+            <div><div class="activity-card-title">Borussia Dortmund vs Málaga</div><div class="activity-card-sub">UCL Quarter Final · Apr 9, 2013</div></div>
+            <div class="activity-card-rating">9.3</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="activity-item">
+        <div class="activity-avatar">JD</div>
+        <div class="activity-body">
+          <div class="activity-text">Created a new list: <strong>"Top 10 Goalkeeper Performances of All Time"</strong></div>
+          <div class="activity-time">1 day ago</div>
+        </div>
+      </div>
+
+      <div class="activity-item">
+        <div class="activity-avatar">JD</div>
+        <div class="activity-body">
+          <div class="activity-text">Wrote a review for <strong>World Cup 2022 Final</strong></div>
+          <div class="activity-time">2 days ago</div>
+          <div class="activity-card">
+            <div class="activity-card-icon">🌍</div>
+            <div><div class="activity-card-title">Argentina vs France</div><div class="activity-card-sub">World Cup Final · Dec 18, 2022</div></div>
+            <div class="activity-card-rating">9.8</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="activity-item">
+        <div class="activity-avatar">JD</div>
+        <div class="activity-body">
+          <div class="activity-text">Started following <strong>Cristiano Ronaldo's player page</strong></div>
+          <div class="activity-time">3 days ago</div>
+        </div>
+      </div>
+
+      <div class="activity-item">
+        <div class="activity-avatar">JD</div>
+        <div class="activity-body">
+          <div class="activity-text">Rated <strong>Portugal vs Hungary — Euro 2016</strong> a <strong style="color:var(--gold)">10/10</strong></div>
+          <div class="activity-time">4 days ago</div>
+          <div class="activity-card">
+            <div class="activity-card-icon">🇵🇹</div>
+            <div><div class="activity-card-title">Portugal vs Hungary</div><div class="activity-card-sub">Euro 2016 Group Stage · Jun 22, 2016</div></div>
+            <div class="activity-card-rating">10</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- WATCHLIST -->
+    <div class="tab-content" id="tab-watchlist">
+      <div class="watchlist-grid">
+        <div class="wl-card"><div class="wl-league">🏆 UCL Final · 2005</div><div class="wl-teams">Liverpool <span class="wl-score">3–3</span> AC Milan</div><div class="wl-footer"><div class="wl-rating">10</div><div class="wl-watched">✓ Watched</div></div></div>
+        <div class="wl-card"><div class="wl-league">🌍 World Cup Final · 2022</div><div class="wl-teams">Argentina <span class="wl-score">3–3</span> France</div><div class="wl-footer"><div class="wl-rating">9.8</div><div class="wl-watched">✓ Watched</div></div></div>
+        <div class="wl-card"><div class="wl-league">⚽ La Liga · 2014</div><div class="wl-teams">Barcelona <span class="wl-score">3–4</span> Real Madrid</div><div class="wl-footer"><div class="wl-rating">9.9</div><div class="wl-watched">✓ Watched</div></div></div>
+        <div class="wl-card"><div class="wl-league">🏆 UCL · 2013</div><div class="wl-teams">Dortmund <span class="wl-score">3–2</span> Málaga</div><div class="wl-footer"><div class="wl-rating">9.3</div><div class="wl-watched">✓ Watched</div></div></div>
+        <div class="wl-card"><div class="wl-league">🇵🇹 Euro · 2016</div><div class="wl-teams">Portugal <span class="wl-score">3–3</span> Hungary</div><div class="wl-footer"><div class="wl-rating">10</div><div class="wl-watched">✓ Watched</div></div></div>
+        <div class="wl-card"><div class="wl-league">🌍 World Cup SF · 2014</div><div class="wl-teams">Germany <span class="wl-score">7–1</span> Brazil</div><div class="wl-footer"><div class="wl-rating">9.6</div><div class="wl-watched">✓ Watched</div></div></div>
+      </div>
+    </div>
+
+    <!-- LISTS -->
+    <div class="tab-content" id="tab-lists">
+      <div class="list-card"><div class="list-icon">🧤</div><div class="list-info"><div class="list-title">Top 10 Goalkeeper Performances of All Time</div><div class="list-meta">Created 1 day ago · Public · 142 likes</div></div><div class="list-count">10</div></div>
+      <div class="list-card"><div class="list-icon">🔥</div><div class="list-info"><div class="list-title">Greatest El Clásico Matches Ever</div><div class="list-meta">Created 2 weeks ago · Public · 289 likes</div></div><div class="list-count">15</div></div>
+      <div class="list-card"><div class="list-icon">🌍</div><div class="list-info"><div class="list-title">Best World Cup Finals in History</div><div class="list-meta">Created 1 month ago · Public · 501 likes</div></div><div class="list-count">8</div></div>
+      <div class="list-card"><div class="list-icon">🇵🇹</div><div class="list-info"><div class="list-title">Ronaldo's Greatest Career Moments</div><div class="list-meta">Created 2 months ago · Public · 1.2k likes</div></div><div class="list-count">20</div></div>
+      <div class="list-card"><div class="list-icon">💔</div><div class="list-info"><div class="list-title">Most Heartbreaking Losses I Witnessed</div><div class="list-meta">Created 3 months ago · Private</div></div><div class="list-count">7</div></div>
+    </div>
+
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="profile-sidebar">
+
+    <div class="xp-section">
+      <div class="xp-header">
+        <span class="xp-level">LEVEL 42 — FOOTBALL SAGE</span>
+      </div>
+      <div style="font-size:11px;color:var(--muted);font-family:'DM Mono',monospace;margin-bottom:6px">6,800 / 10,000 XP to Level 43</div>
+      <div class="xp-track"><div class="xp-fill"></div></div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">Achievements</div>
+      <div class="achievements-grid">
+        <div class="ach"><div class="ach-icon">🏆</div><div class="ach-name">UCL Fan</div></div>
+        <div class="ach"><div class="ach-icon">⚽</div><div class="ach-name">500 Matches</div></div>
+        <div class="ach"><div class="ach-icon">✍️</div><div class="ach-name">Reviewer</div></div>
+        <div class="ach"><div class="ach-icon">📜</div><div class="ach-name">List Maker</div></div>
+        <div class="ach"><div class="ach-icon">⭐</div><div class="ach-name">Top Rater</div></div>
+        <div class="ach"><div class="ach-icon">🌍</div><div class="ach-name">World Cup</div></div>
+        <div class="ach locked"><div class="ach-icon">🔒</div><div class="ach-name">1000 Matches</div></div>
+        <div class="ach locked"><div class="ach-icon">🔒</div><div class="ach-name">Legend</div></div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">Favourite Clubs</div>
+      <div class="fav-item"><div class="fav-icon">🟢</div><div class="fav-name">FC Porto</div><div class="fav-type">Club</div></div>
+      <div class="fav-item"><div class="fav-icon">🔴</div><div class="fav-name">Liverpool FC</div><div class="fav-type">Club</div></div>
+      <div class="fav-item"><div class="fav-icon">🇵🇹</div><div class="fav-name">Portugal NT</div><div class="fav-type">National Team</div></div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">Favourite Players</div>
+      <div class="fav-item"><div class="fav-icon">⚽</div><div class="fav-name">Cristiano Ronaldo</div><div class="fav-type">Forward</div></div>
+      <div class="fav-item"><div class="fav-icon">🧤</div><div class="fav-name">Jerzy Dudek</div><div class="fav-type">Goalkeeper</div></div>
+      <div class="fav-item"><div class="fav-icon">🎖️</div><div class="fav-name">Zinedine Zidane</div><div class="fav-type">Midfielder</div></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>

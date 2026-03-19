@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MyFootballWorld — Ronaldo Profile</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --green: #00FF87; --green-dim: #00c96a; --dark: #080C0A; --dark2: #0F1510;
+    --dark3: #161D18; --card: #111711; --border: #1e2b20; --text: #e8f0e9;
+    --muted: #5a7060; --accent: #FF4757; --gold: #FFD700;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--dark); color: var(--text); font-family: 'DM Sans', sans-serif; overflow-x: hidden; }
+  body::before {
+    content: ''; position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    background-size: 150px; pointer-events: none; z-index: 999; opacity: 0.4;
+  }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 48px; background: rgba(8,12,10,0.9); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  Rpx; letter-spacing: 2px; color: var(--green); text-decoration: none; }
+  .logo span { color: var(--text); }
+  .nav-right { display: flex; align-items: center; gap: 24px; }
+  .nav-back { color: var(--muted); font-size: 13px; text-decoration: none; }
+  .nav-back:hover { color: var(--text); }
+  .nav-cta { background: var(--green); color: var(--dark); padding: 8px 20px; border-radius: 4px; font-weight: 700; font-size: 13px; text-decoration: none; }
+
+  /* HERO */
+  .player-hero {
+    padding-top: 80px;
+    background: linear-gradient(180deg, #101a12 0%, var(--dark) 100%);
+    border-bottom: 1px solid var(--border);
+    position: relative; overflow: hidden;
+  }
+
+  .hero-number {
+    position: absolute; right: 80px; top: 80px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 320px; line-height: 1;
+    color: rgba(0,255,135,0.03);
+    letter-spacing: -10px;
+    user-select: none;
+  }
+
+  .player-hero-inner {
+    position: relative; z-index: 1;
+    padding: 60px 48px 48px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 48px; align-items: start;
+  }
+
+  .player-avatar-wrap { position: relative; }
+
+  .player-avatar {
+    width: 140px; height: 140px; border-radius: 50%;
+    background: linear-gradient(135deg, #1a3a1e, #0d2010);
+    border: 3px solid var(--green);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 64px;
+    box-shadow: 0 0 40px rgba(0,255,135,0.2);
+  }
+
+  .player-country-flag {
+    position: absolute; bottom: 0; right: 0;
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--dark2); border: 2px solid var(--dark);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+
+  .player-info-main { padding-top: 8px; }
+
+  .player-pos-badge {
+    display: inline-block;
+    background: rgba(0,255,135,0.1); border: 1px solid rgba(0,255,135,0.25);
+    color: var(--green); font-size: 11px; font-weight: 600;
+    letter-spacing: 2px; text-transform: uppercase;
+    padding: 4px 12px; border-radius: 2px; margin-bottom: 12px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .player-name-big {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 72px; letter-spacing: 2px; line-height: 0.95;
+    margin-bottom: 8px;
+  }
+
+  .player-full-name { font-size: 14px; color: var(--muted); margin-bottom: 20px; font-style: italic; }
+
+  .player-clubs-row {
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+
+  .club-badge {
+    display: flex; align-items: center; gap: 6px;
+    background: var(--dark3); border: 1px solid var(--border);
+    padding: 6px 12px; border-radius: 4px; font-size: 13px;
+    transition: border-color 0.2s;
+  }
+  .club-badge:hover { border-color: var(--green); }
+  .club-badge.current { border-color: rgba(0,255,135,0.4); color: var(--green); }
+
+  .player-right-stats {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+    padding-top: 8px;
+  }
+
+  .hero-stat {
+    background: var(--dark3); border: 1px solid var(--border);
+    border-radius: 8px; padding: 20px; text-align: center;
+    transition: border-color 0.2s;
+  }
+  .hero-stat:hover { border-color: rgba(0,255,135,0.3); }
+
+  .hero-stat-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 40px; color: var(--green); letter-spacing: 1px; line-height: 1;
+  }
+  .hero-stat-label { font-size: 11px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; font-family: 'DM Mono', monospace; margin-top: 4px; }
+
+  /* ACTION BAR */
+  .action-bar {
+    display: flex; align-items: center; gap: 12px;
+    padding: 20px 48px; background: var(--dark2);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .btn-follow {
+    background: var(--green); color: var(--dark);
+    border: none; padding: 10px 28px; border-radius: 4px;
+    font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.2s;
+  }
+  .btn-follow:hover { background: var(--green-dim); }
+  .btn-follow.following { background: var(--dark3); color: var(--green); border: 1px solid var(--green); }
+
+  .btn-outline {
+    background: transparent; color: var(--muted);
+    border: 1px solid var(--border); padding: 10px 20px;
+    border-radius: 4px; font-size: 14px; cursor: pointer; transition: all 0.2s;
+  }
+  .btn-outline:hover { border-color: var(--green); color: var(--green); }
+
+  .followers-text { font-size: 13px; color: var(--muted); margin-left: auto; font-family: 'DM Mono', monospace; }
+  .followers-text span { color: var(--text); font-weight: 600; }
+
+  /* BODY */
+  .player-body {
+    display: grid; grid-template-columns: 1fr 320px;
+    max-width: 100%;
+  }
+
+  .player-main { padding: 48px; border-right: 1px solid var(--border); }
+  .player-sidebar { padding: 48px 32px; background: var(--dark2); }
+
+  /* TABS */
+  .tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 40px; }
+  .tab { padding: 12px 20px; font-size: 12px; font-weight: 600; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s; letter-spacing: 1px; text-transform: uppercase; font-family: 'DM Mono', monospace; background: none; border-left: none; border-right: none; border-top: none; }
+  .tab.active { color: var(--green); border-bottom-color: var(--green); }
+  .tab:hover { color: var(--text); }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* CAREER TIMELINE */
+  .career-line { position: relative; padding-left: 32px; }
+  .career-line::before { content: ''; position: absolute; left: 8px; top: 8px; bottom: 8px; width: 2px; background: var(--border); }
+
+  .career-entry { position: relative; margin-bottom: 32px; }
+  .career-dot {
+    position: absolute; left: -28px; top: 6px;
+    width: 12px; height: 12px; border-radius: 50%;
+    background: var(--border); border: 2px solid var(--dark);
+  }
+  .career-entry.current .career-dot { background: var(--green); box-shadow: 0 0 10px rgba(0,255,135,0.5); }
+
+  .career-years { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: 1px; margin-bottom: 4px; }
+  .career-club { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 1px; display: flex; align-items: center; gap: 10px; }
+  .career-stats { display: flex; gap: 24px; margin-top: 8px; }
+  .career-stat { }
+  .career-stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 24px; color: var(--green); }
+  .career-stat-label { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; letter-spacing: 1px; }
+
+  /* AWARD CARDS */
+  .awards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+  .award-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 8px; padding: 20px; text-align: center;
+    transition: all 0.25s;
+  }
+  .award-card:hover { border-color: rgba(255,215,0,0.3); transform: translateY(-2px); }
+  .award-icon { font-size: 32px; margin-bottom: 10px; }
+  .award-name { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 1px; margin-bottom: 4px; }
+  .award-count { font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: var(--gold); line-height: 1; }
+  .award-label { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; }
+
+  /* MATCHES TABLE */
+  .matches-table { width: 100%; border-collapse: collapse; }
+  .matches-table th {
+    font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--muted); padding: 8px 12px;
+    border-bottom: 1px solid var(--border); text-align: left;
+  }
+  .matches-table td { padding: 12px; border-bottom: 1px solid rgba(30,43,32,0.4); font-size: 13px; }
+  .matches-table tr:hover td { background: var(--dark3); }
+  .result-w { color: var(--green); font-family: 'Bebas Neue', sans-serif; font-size: 16px; }
+  .result-l { color: var(--accent); font-family: 'Bebas Neue', sans-serif; font-size: 16px; }
+  .result-d { color: var(--gold); font-family: 'Bebas Neue', sans-serif; font-size: 16px; }
+  .rating-cell { font-family: 'Bebas Neue', sans-serif; font-size: 18px; color: var(--gold); }
+  .goal-badge { background: rgba(0,255,135,0.1); color: var(--green); border: 1px solid rgba(0,255,135,0.3); padding: 2px 8px; border-radius: 3px; font-size: 12px; font-family: 'DM Mono', monospace; }
+
+  /* SIDEBAR */
+  .sidebar-section { margin-bottom: 32px; }
+  .sidebar-title { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 1px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .sidebar-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  .bio-text { font-size: 14px; color: var(--muted); line-height: 1.75; font-weight: 300; }
+
+  .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid rgba(30,43,32,0.5); font-size: 13px; }
+  .info-key { color: var(--muted); font-family: 'DM Mono', monospace; font-size: 11px; }
+  .info-val { color: var(--text); font-weight: 500; }
+
+  .skill-bar-row { margin-bottom: 14px; }
+  .skill-label { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px; }
+  .skill-name { color: var(--muted); font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.5px; text-transform: uppercase; }
+  .skill-val { font-family: 'Bebas Neue', sans-serif; font-size: 18px; color: var(--green); }
+  .skill-track { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .skill-fill { height: 100%; background: linear-gradient(90deg, var(--green-dim), var(--green)); border-radius: 2px; transition: width 1s ease; }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="index.html">MY<span>FOOTBALLWORLD</span></a>
+  <div class="nav-right">
+    <a href="index.html" class="nav-back">← Home</a>
+    <a href="#" class="nav-cta">Sign Up Free</a>
+  </div>
+</nav>
+
+<!-- PLAYER HERO -->
+<div class="player-hero">
+  <div class="hero-number">7</div>
+  <div class="player-hero-inner">
+    <div class="player-avatar-wrap">
+      <div class="player-avatar">⚽</div>
+      <div class="player-country-flag">🇵🇹</div>
+    </div>
+
+    <div class="player-info-main">
+      <div class="player-pos-badge">Forward · Right Wing</div>
+      <div class="player-name-big">RONALDO</div>
+      <div class="player-full-name">Cristiano Ronaldo dos Santos Aveiro</div>
+      <div class="player-clubs-row">
+        <div class="club-badge">🟢 Sporting CP</div>
+        <div class="club-badge">🔴 Man United</div>
+        <div class="club-badge">⚪ Real Madrid</div>
+        <div class="club-badge">🔵 Juventus</div>
+        <div class="club-badge current">🟢 Al Nassr ·  Now</div>
+      </div>
+    </div>
+
+    <div class="player-right-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-val">900+</div>
+        <div class="hero-stat-label">Career Goals</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-val">5×</div>
+        <div class="hero-stat-label">Ballon d'Or</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-val">1,200+</div>
+        <div class="hero-stat-label">Matches</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-val">9.1</div>
+        <div class="hero-stat-label">Avg Rating</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ACTION BAR -->
+<div class="action-bar">
+  <button class="btn-follow" id="followBtn">+ Follow Player</button>
+  <button class="btn-outline">+ Add to List</button>
+  <button class="btn-outline">↗ Share</button>
+  <div class="followers-text"><span>284,910</span> fans following</div>
+</div>
+
+<!-- BODY -->
+<div class="player-body">
+  <div class="player-main">
+
+    <div class="tabs">
+      <button class="tab active" data-tab="career">Career</button>
+      <button class="tab" data-tab="awards">Awards</button>
+      <button class="tab" data-tab="matches">Top Matches</button>
+    </div>
+
+    <!-- CAREER TAB -->
+    <div class="tab-content active" id="tab-career">
+      <div class="career-line">
+
+        <div class="career-entry current">
+          <div class="career-years">2023 — PRESENT</div>
+          <div class="career-club">🟢 Al Nassr</div>
+          <div class="career-stats">
+            <div class="career-stat"><div class="career-stat-val">90+</div><div class="career-stat-label">Goals</div></div>
+            <div class="career-stat"><div class="career-stat-val">70+</div><div class="career-stat-label">Matches</div></div>
+          </div>
+        </div>
+
+        <div class="career-entry">
+          <div class="career-years">2021 — 2022</div>
+          <div class="career-club">🔴 Manchester United</div>
+          <div class="career-stats">
+            <div class="career-stat"><div class="career-stat-val">27</div><div class="career-stat-label">Goals</div></div>
+            <div class="career-stat"><div class="career-stat-val">54</div><div class="career-stat-label">Matches</div></div>
+          </div>
+        </div>
+
+        <div class="career-entry">
+          <div class="career-years">2018 — 2021</div>
+          <div class="career-club">🔵 Juventus</div>
+          <div class="career-stats">
+            <div class="career-stat"><div class="career-stat-val">101</div><div class="career-stat-label">Goals</div></div>
+            <div class="career-stat"><div class="career-stat-val">134</div><div class="career-stat-label">Matches</div></div>
+          </div>
+        </div>
+
+        <div class="career-entry">
+          <div class="career-years">2009 — 2018</div>
+          <div class="career-club">⚪ Real Madrid</div>
+          <div class="career-stats">
+            <div class="career-stat"><div class="career-stat-val">450</div><div class="career-stat-label">Goals</div></div>
+            <div class="career-stat"><div class="career-stat-val">438</div><div class="career-stat-label">Matches</div></div>
+            <div class="career-stat"><div class="career-stat-val">4×</div><div class="career-stat-label">UCL Titles</div></div>
+          </div>
+        </div>
+
+        <div class="career-entry">
+          <div class="career-years">2003 — 2009</div>
+          <div class="career-club">🔴 Manchester United</div>
+          <div class="career-stats">
+            <div class="career-stat"><div class="career-stat-val">118</div><div class="career-stat-label">Goals</div></div>
+            <div class="career-stat"><div class="career-stat-val">292</div><div class="career-stat-label">Matches</div></div>
+            <div class="career-stat"><div class="career-stat-val">1×</div><div class="career-stat-label">UCL Title</div></div>
+          </div>
+        </div>
+
+        <div class="career-entry">
+          <div class="career-years">2001 — 2003</div>
+          <div class="career-club">🟢 Sporting CP</div>
+          <div class="career-stats">
+            <div class="career-stat"><div class="career-stat-val">5</div><div class="career-stat-label">Goals</div></div>
+            <div class="career-stat"><div class="career-stat-val">31</div><div class="career-stat-label">Matches</div></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- AWARDS TAB -->
+    <div class="tab-content" id="tab-awards">
+      <div class="awards-grid">
+        <div class="award-card">
+          <div class="award-icon">🏆</div>
+          <div class="award-name">Champions League</div>
+          <div class="award-count">5</div>
+          <div class="award-label">UCL Titles</div>
+        </div>
+        <div class="award-card">
+          <div class="award-icon">⚽</div>
+          <div class="award-name">Ballon d'Or</div>
+          <div class="award-count">5</div>
+          <div class="award-label">Times Won</div>
+        </div>
+        <div class="award-card">
+          <div class="award-icon">👑</div>
+          <div class="award-name">La Liga</div>
+          <div class="award-count">2</div>
+          <div class="award-label">Titles</div>
+        </div>
+        <div class="award-card">
+          <div class="award-icon">🏴󠁧󠁢󠁥󠁮󠁧󠁿</div>
+          <div class="award-name">Premier League</div>
+          <div class="award-count">3</div>
+          <div class="award-label">Titles</div>
+        </div>
+        <div class="award-card">
+          <div class="award-icon">🇵🇹</div>
+          <div class="award-name">Euro Champion</div>
+          <div class="award-count">1</div>
+          <div class="award-label">2016</div>
+        </div>
+        <div class="award-card">
+          <div class="award-icon">🥅</div>
+          <div class="award-name">Top Scorer</div>
+          <div class="award-count">900+</div>
+          <div class="award-label">Career Goals</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MATCHES TAB -->
+    <div class="tab-content" id="tab-matches">
+      <table class="matches-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Match</th>
+            <th>Competition</th>
+            <th>Result</th>
+            <th>Goals</th>
+            <th>Rating</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:11px">Apr 23, 2011</td>
+            <td>Real Madrid vs Schalke</td>
+            <td style="color:var(--muted);font-size:12px">UCL QF</td>
+            <td class="result-w">W 6–1</td>
+            <td><span class="goal-badge">⚽ Hat-trick</span></td>
+            <td class="rating-cell">10</td>
+          </tr>
+          <tr>
+            <td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:11px">Jan 29, 2013</td>
+            <td>Real Madrid vs Getafe</td>
+            <td style="color:var(--muted);font-size:12px">La Liga</td>
+            <td class="result-w">W 4–0</td>
+            <td><span class="goal-badge">⚽ ⚽ ⚽ ⚽</span></td>
+            <td class="rating-cell">9.9</td>
+          </tr>
+          <tr>
+            <td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:11px">Jun 15, 2016</td>
+            <td>Portugal vs Hungary</td>
+            <td style="color:var(--muted);font-size:12px">Euro 2016</td>
+            <td class="result-d">D 3–3</td>
+            <td><span class="goal-badge">⚽ Hat-trick</span></td>
+            <td class="rating-cell">9.8</td>
+          </tr>
+          <tr>
+            <td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:11px">May 3, 2017</td>
+            <td>Real Madrid vs Atletico</td>
+            <td style="color:var(--muted);font-size:12px">UCL SF</td>
+            <td class="result-w">W 3–0</td>
+            <td><span class="goal-badge">⚽ Hat-trick</span></td>
+            <td class="rating-cell">9.9</td>
+          </tr>
+          <tr>
+            <td style="color:var(--muted);font-family:'DM Mono',monospace;font-size:11px">Jun 15, 2018</td>
+            <td>Portugal vs Spain</td>
+            <td style="color:var(--muted);font-size:12px">World Cup</td>
+            <td class="result-d">D 3–3</td>
+            <td><span class="goal-badge">⚽ Hat-trick</span></td>
+            <td class="rating-cell">10</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="player-sidebar">
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">Bio</div>
+      <p class="bio-text">Born February 5, 1985 in Funchal, Madeira. One of the greatest footballers of all time, known for his incredible athleticism, goal-scoring ability, and relentless work ethic. Has broken almost every record in football history.</p>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">Info</div>
+      <div class="info-row"><div class="info-key">Born</div><div class="info-val">Feb 5, 1985</div></div>
+      <div class="info-row"><div class="info-key">Nationality</div><div class="info-val">🇵🇹 Portuguese</div></div>
+      <div class="info-row"><div class="info-key">Height</div><div class="info-val">187 cm</div></div>
+      <div class="info-row"><div class="info-key">Position</div><div class="info-val">Forward / RW</div></div>
+      <div class="info-row"><div class="info-key">Preferred Foot</div><div class="info-val">Right</div></div>
+      <div class="info-row"><div class="info-key">Current Club</div><div class="info-val">Al Nassr 🟢</div></div>
+      <div class="info-row"><div class="info-key">Shirt No.</div><div class="info-val">#7</div></div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">Attributes</div>
+      <div class="skill-bar-row">
+        <div class="skill-label"><span class="skill-name">Shooting</span><span class="skill-val">97</span></div>
+        <div class="skill-track"><div class="skill-fill" style="width:97%"></div></div>
+      </div>
+      <div class="skill-bar-row">
+        <div class="skill-label"><span class="skill-name">Pace</span><span class="skill-val">93</span></div>
+        <div class="skill-track"><div class="skill-fill" style="width:93%"></div></div>
+      </div>
+      <div class="skill-bar-row">
+        <div class="skill-label"><span class="skill-name">Dribbling</span><span class="skill-val">91</span></div>
+        <div class="skill-track"><div class="skill-fill" style="width:91%"></div></div>
+      </div>
+      <div class="skill-bar-row">
+        <div class="skill-label"><span class="skill-name">Physical</span><span class="skill-val">95</span></div>
+        <div class="skill-track"><div class="skill-fill" style="width:95%"></div></div>
+      </div>
+      <div class="skill-bar-row">
+        <div class="skill-label"><span class="skill-name">Passing</span><span class="skill-val">82</span></div>
+        <div class="skill-track"><div class="skill-fill" style="width:82%"></div></div>
+      </div>
+      <div class="skill-bar-row">
+        <div class="skill-label"><span class="skill-name">Heading</span><span class="skill-val">89</span></div>
+        <div class="skill-track"><div class="skill-fill" style="width:89%"></div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+    });
+  });
+
+  const followBtn = document.getElementById('followBtn');
+  followBtn.addEventListener('click', () => {
+    followBtn.classList.toggle('following');
+    followBtn.textContent = followBtn.classList.contains('following') ? '✓ Following' : '+ Follow Player';
+  });
+</script>
+</body>
+</html>
