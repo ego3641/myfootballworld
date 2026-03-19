@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MyFootballWorld — Istanbul 2005</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --green: #00FF87;
+    --green-dim: #00c96a;
+    --dark: #080C0A;
+    --dark2: #0F1510;
+    --dark3: #161D18;
+    --card: #111711;
+    --border: #1e2b20;
+    --text: #e8f0e9;
+    --muted: #5a7060;
+    --accent: #FF4757;
+    --gold: #FFD700;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--dark); color: var(--text); font-family: 'DM Sans', sans-serif; overflow-x: hidden; }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    background-size: 150px; pointer-events: none; z-index: 999; opacity: 0.4;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 48px;
+    background: rgba(8,12,10,0.9); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  Rpx; letter-spacing: 2px; color: var(--green); text-decoration: none; }
+  .logo span { color: var(--text); }
+  .nav-right { display: flex; align-items: center; gap: 24px; }
+  .nav-back { color: var(--muted); font-size: 13px; text-decoration: none; display: flex; align-items: center; gap: 6px; transition: color 0.2s; }
+  .nav-back:hover { color: var(--text); }
+  .nav-cta { background: var(--green); color: var(--dark); padding: 8px 20px; border-radius: 4px; font-weight: 700; font-size: 13px; text-decoration: none; }
+
+  /* HERO MATCH */
+  .match-hero {
+    padding-top: 80px;
+    background: linear-gradient(180deg, #0a1f10 0%, var(--dark) 100%);
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .match-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(0,255,135,0.06) 0%, transparent 70%);
+  }
+
+  /* Pitch lines bg */
+  .pitch-bg {
+    position: absolute; inset: 0; opacity: 0.03;
+    background-image:
+      linear-gradient(var(--green) 1px, transparent 1px),
+      linear-gradient(90deg, var(--green) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  .match-hero-inner {
+    position: relative; z-index: 1;
+    padding: 60px 48px 0;
+  }
+
+  .match-breadcrumb {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; color: var(--muted); font-family: 'DM Mono', monospace;
+    letter-spacing: 1px; text-transform: uppercase; margin-bottom: 40px;
+  }
+  .match-breadcrumb span { color: var(--green); }
+
+  .match-scoreboard {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 24px;
+    align-items: center;
+    max-width: 900px;
+    margin: 0 auto 48px;
+    text-align: center;
+  }
+
+  .team-side { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+
+  .team-badge-lg {
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    background: var(--dark3);
+    border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 48px;
+    transition: transform 0.3s;
+  }
+  .team-badge-lg:hover { transform: scale(1.05); }
+
+  .team-name-lg {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px; letter-spacing: 2px; color: var(--text);
+  }
+
+  .team-country {
+    font-size: 12px; color: var(--muted); letter-spacing: 1px;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .score-center { text-align: center; }
+
+  .big-score {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 96px; letter-spacing: 8px; line-height: 1;
+    color: var(--green);
+    text-shadow: 0 0 60px rgba(0,255,135,0.3);
+  }
+
+  .score-et {
+    font-size: 12px; color: var(--muted); letter-spacing: 2px;
+    font-family: 'DM Mono', monospace; text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  .score-pens {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px; color: var(--muted); letter-spacing: 3px;
+    margin-top: 8px;
+  }
+  .score-pens span { color: var(--gold); }
+
+  .match-meta-bar {
+    display: flex; align-items: center; justify-content: center; gap: 32px;
+    padding: 20px 48px;
+    background: rgba(0,0,0,0.2);
+    border-top: 1px solid var(--border);
+    font-size: 12px; color: var(--muted); font-family: 'DM Mono', monospace;
+    letter-spacing: 1px;
+  }
+
+  .meta-pill {
+    display: flex; align-items: center; gap: 6px;
+  }
+  .meta-pill .icon { font-size: 14px; }
+
+  /* COMMUNITY RATING */
+  .rating-bar-section {
+    background: var(--dark2);
+    border-bottom: 1px solid var(--border);
+    padding: 32px 48px;
+    display: flex; align-items: center; gap: 48px;
+  }
+
+  .big-rating {
+    text-align: center; flex-shrink: 0;
+  }
+
+  .rating-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 72px; line-height: 1;
+    color: var(--gold);
+  }
+
+  .rating-stars {
+    font-size: 20px; letter-spacing: 4px; color: var(--gold); margin: 4px 0;
+  }
+
+  .rating-count { font-size: 12px; color: var(--muted); font-family: 'DM Mono', monospace; }
+
+  .rating-bars { flex: 1; }
+
+  .rating-row {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 8px;
+  }
+
+  .rating-label { font-size: 12px; color: var(--muted); width: 16px; text-align: right; font-family: 'DM Mono', monospace; }
+
+  .rating-track {
+    flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden;
+  }
+
+  .rating-fill {
+    height: 100%; background: var(--gold); border-radius: 3px;
+    transition: width 1s ease;
+  }
+
+  .rating-count-sm { font-size: 11px; color: var(--muted); width: 40px; font-family: 'DM Mono', monospace; }
+
+  .user-rate-section { flex-shrink: 0; text-align: center; }
+  .user-rate-label { font-size: 12px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; font-family: 'DM Mono', monospace; }
+  .star-picker { display: flex; gap: 4px; justify-content: center; }
+  .star-btn {
+    font-size: 28px; cursor: pointer; color: var(--border);
+    transition: color 0.15s, transform 0.15s;
+    background: none; border: none;
+  }
+  .star-btn:hover, .star-btn.active { color: var(--gold); transform: scale(1.2); }
+  .rate-submit {
+    margin-top: 12px; background: var(--green); color: var(--dark);
+    border: none; padding: 8px 24px; border-radius: 4px;
+    font-weight: 700; font-size: 13px; cursor: pointer; width: 100%;
+    transition: background 0.2s;
+  }
+  .rate-submit:hover { background: var(--green-dim); }
+
+  /* MAIN CONTENT */
+  .match-body {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 0;
+    max-width: 100%;
+  }
+
+  .match-main { padding: 48px; border-right: 1px solid var(--border); }
+  .match-sidebar { padding: 48px 32px; background: var(--dark2); }
+
+  /* TABS */
+  .tabs {
+    display: flex; gap: 0; border-bottom: 1px solid var(--border); margin-bottom: 40px;
+  }
+
+  .tab {
+    padding: 12px 24px; font-size: 13px; font-weight: 600; color: var(--muted);
+    cursor: pointer; border-bottom: 2px solid transparent; transition: all 0.2s;
+    letter-spacing: 0.5px; text-transform: uppercase; font-family: 'DM Mono', monospace;
+    background: none; border-left: none; border-right: none; border-top: none;
+  }
+
+  .tab.active { color: var(--green); border-bottom-color: var(--green); }
+  .tab:hover { color: var(--text); }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* TIMELINE */
+  .timeline { position: relative; }
+
+  .timeline-half {
+    margin-bottom: 32px;
+  }
+
+  .half-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 16px;
+    display: flex; align-items: center; gap: 12px;
+  }
+
+  .half-label::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+
+  .event-row {
+    display: flex; align-items: center; gap: 16px; padding: 12px 0;
+    border-bottom: 1px solid rgba(30,43,32,0.5);
+    animation: fadeUp 0.4s ease both;
+  }
+
+  .event-min {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px; color: var(--muted); width: 44px; text-align: right; flex-shrink: 0;
+  }
+
+  .event-min span { font-size: 12px; }
+
+  .event-icon-wrap {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+
+  .event-icon-wrap.goal { background: rgba(0,255,135,0.1); border: 1px solid rgba(0,255,135,0.3); }
+  .event-icon-wrap.card { background: rgba(255,71,87,0.1); border: 1px solid rgba(255,71,87,0.3); }
+  .event-icon-wrap.sub { background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.3); }
+
+  .event-info { flex: 1; }
+  .event-player { font-size: 15px; font-weight: 600; color: var(--text); }
+  .event-desc { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .event-team { font-size: 18px; flex-shrink: 0; }
+
+  /* LINEUP */
+  .lineup-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 32px;
+  }
+
+  .lineup-team-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px; letter-spacing: 1px; margin-bottom: 16px;
+    display: flex; align-items: center; gap: 10px;
+  }
+
+  .player-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 0; border-bottom: 1px solid rgba(30,43,32,0.5);
+    cursor: pointer; transition: background 0.15s;
+    border-radius: 4px; padding: 10px 8px;
+  }
+  .player-row:hover { background: var(--dark3); }
+
+  .player-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px; color: var(--muted); width: 28px; text-align: center;
+  }
+  .player-name { font-size: 14px; font-weight: 500; flex: 1; }
+  .player-pos {
+    font-size: 10px; letter-spacing: 1px; text-transform: uppercase;
+    color: var(--muted); font-family: 'DM Mono', monospace;
+    background: var(--dark3); padding: 2px 6px; border-radius: 2px;
+  }
+  .player-rating-sm {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px; color: var(--gold);
+  }
+
+  /* STATS TAB */
+  .stat-comparison { margin-bottom: 24px; }
+
+  .stat-comp-label {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 13px; margin-bottom: 8px;
+  }
+  .stat-comp-name { color: var(--muted); font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 1px; text-transform: uppercase; }
+  .stat-val-left { font-weight: 700; color: var(--text); }
+  .stat-val-right { font-weight: 700; color: var(--text); }
+
+  .stat-track {
+    height: 8px; background: var(--border); border-radius: 4px;
+    display: flex; overflow: hidden;
+  }
+
+  .stat-left-fill { background: #FF4757; border-radius: 4px 0 0 4px; transition: width 1s ease; }
+  .stat-right-fill { background: var(--green); border-radius: 0 4px 4px 0; flex: 1; }
+
+  /* REVIEWS */
+  .review-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 8px; padding: 20px; margin-bottom: 16px;
+    transition: border-color 0.2s;
+  }
+  .review-card:hover { border-color: rgba(0,255,135,0.2); }
+
+  .review-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .reviewer-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--green); display: flex; align-items: center; justify-content: center;
+    font-family: 'Bebas Neue', sans-serif; font-size: 16px; color: var(--dark); flex-shrink: 0;
+  }
+  .reviewer-name { font-weight: 600; font-size: 14px; }
+  .reviewer-rating { color: var(--gold); font-size: 13px; margin-top: 2px; }
+  .review-date { font-size: 11px; color: var(--muted); margin-left: auto; font-family: 'DM Mono', monospace; }
+  .review-text { font-size: 14px; color: var(--muted); line-height: 1.7; font-weight: 300; }
+  .review-helpful { font-size: 12px; color: var(--muted); margin-top: 12px; display: flex; align-items: center; gap: 8px; }
+  .helpful-btn { background: var(--dark3); border: 1px solid var(--border); color: var(--muted); padding: 3px 10px; border-radius: 3px; cursor: pointer; font-size: 12px; transition: all 0.2s; }
+  .helpful-btn:hover { border-color: var(--green); color: var(--green); }
+
+  /* SIDEBAR */
+  .sidebar-section { margin-bottom: 36px; }
+
+  .sidebar-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px; letter-spacing: 1px; margin-bottom: 16px;
+    color: var(--text); display: flex; align-items: center; gap: 8px;
+  }
+
+  .sidebar-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  .info-row {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding: 10px 0; border-bottom: 1px solid rgba(30,43,32,0.5);
+    font-size: 13px;
+  }
+  .info-key { color: var(--muted); font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.5px; }
+  .info-val { color: var(--text); font-weight: 500; text-align: right; }
+
+  .watched-btn {
+    width: 100%; padding: 14px; background: var(--green); color: var(--dark);
+    border: none; border-radius: 6px; font-weight: 700; font-size: 15px;
+    cursor: pointer; transition: all 0.2s; letter-spacing: 0.5px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .watched-btn:hover { background: var(--green-dim); transform: translateY(-1px); }
+  .watched-btn.active { background: var(--dark3); color: var(--green); border: 1px solid var(--green); }
+
+  .action-row { display: flex; gap: 8px; margin-top: 10px; }
+  .action-btn {
+    flex: 1; padding: 10px; background: var(--dark3); border: 1px solid var(--border);
+    color: var(--muted); border-radius: 6px; font-size: 13px; cursor: pointer;
+    transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .action-btn:hover { border-color: var(--green); color: var(--green); }
+
+  .similar-match {
+    display: flex; align-items: center; gap: 12px; padding: 12px 0;
+    border-bottom: 1px solid rgba(30,43,32,0.5); cursor: pointer; transition: background 0.15s;
+    border-radius: 4px;
+  }
+  .similar-match:hover { background: var(--dark3); padding: 12px 8px; }
+  .similar-icon { font-size: 24px; }
+  .similar-info { flex: 1; }
+  .similar-name { font-size: 13px; font-weight: 500; }
+  .similar-meta { font-size: 11px; color: var(--muted); font-family: 'DM Mono', monospace; }
+  .similar-rating { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--gold); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="myfootballlist.html">MY<span>FOOTBALLWORLD</span></a>
+  <div class="nav-right">
+    <a href="myfootballlist.html" class="nav-back">← Home</a>
+    <a href="#" class="nav-cta">Sign Up Free</a>
+  </div>
+</nav>
+
+<!-- MATCH HERO -->
+<div class="match-hero">
+  <div class="pitch-bg"></div>
+  <div class="match-hero-inner">
+    <div class="match-breadcrumb">
+      UEFA Champions League <span>›</span> Final <span>›</span> 2004–05 Season
+    </div>
+
+    <div class="match-scoreboard">
+      <div class="team-side">
+        <div class="team-badge-lg">🔴</div>
+        <div class="team-name-lg">Liverpool</div>
+        <div class="team-country">England</div>
+      </div>
+
+      <div class="score-center">
+        <div class="big-score">3 · 3</div>
+        <div class="score-et">After Extra Time</div>
+        <div class="score-pens">Pens: <span>3–2</span></div>
+      </div>
+
+      <div class="team-side">
+        <div class="team-badge-lg">🔴</div>
+        <div class="team-name-lg">AC Milan</div>
+        <div class="team-country">Italy</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="match-meta-bar">
+    <div class="meta-pill"><span class="icon">📅</span> May 25, 2005</div>
+    <div class="meta-pill"><span class="icon">🏟️</span> Atatürk Stadium, Istanbul</div>
+    <div class="meta-pill"><span class="icon">👥</span> 69,000 Attendance</div>
+    <div class="meta-pill"><span class="icon">🏆</span> UEFA Champions League Final</div>
+    <div class="meta-pill"><span class="icon">🎙️</span> Referee: Manuel González</div>
+  </div>
+</div>
+
+<!-- RATING BAR -->
+<div class="rating-bar-section">
+  <div class="big-rating">
+    <div class="rating-num">9.8</div>
+    <div class="rating-stars">★★★★★</div>
+    <div class="rating-count">48,291 ratings</div>
+  </div>
+
+  <div class="rating-bars">
+    <div class="rating-row">
+      <div class="rating-label">10</div>
+      <div class="rating-track"><div class="rating-fill" style="width:82%"></div></div>
+      <div class="rating-count-sm">39.6k</div>
+    </div>
+    <div class="rating-row">
+      <div class="rating-label">9</div>
+      <div class="rating-track"><div class="rating-fill" style="width:11%"></div></div>
+      <div class="rating-count-sm">5.3k</div>
+    </div>
+    <div class="rating-row">
+      <div class="rating-label">8</div>
+      <div class="rating-track"><div class="rating-fill" style="width:4%"></div></div>
+      <div class="rating-count-sm">1.9k</div>
+    </div>
+    <div class="rating-row">
+      <div class="rating-label">7</div>
+      <div class="rating-track"><div class="rating-fill" style="width:2%"></div></div>
+      <div class="rating-count-sm">966</div>
+    </div>
+    <div class="rating-row">
+      <div class="rating-label">≤6</div>
+      <div class="rating-track"><div class="rating-fill" style="width:1%"></div></div>
+      <div class="rating-count-sm">481</div>
+    </div>
+  </div>
+
+  <div class="user-rate-section">
+    <div class="user-rate-label">Your Rating</div>
+    <div class="star-picker" id="starPicker">
+      <button class="star-btn" data-v="1">★</button>
+      <button class="star-btn" data-v="2">★</button>
+      <button class="star-btn" data-v="3">★</button>
+      <button class="star-btn" data-v="4">★</button>
+      <button class="star-btn" data-v="5">★</button>
+      <button class="star-btn" data-v="6">★</button>
+      <button class="star-btn" data-v="7">★</button>
+      <button class="star-btn" data-v="8">★</button>
+      <button class="star-btn" data-v="9">★</button>
+      <button class="star-btn" data-v="10">★</button>
+    </div>
+    <button class="rate-submit">Rate Match</button>
+  </div>
+</div>
+
+<!-- BODY -->
+<div class="match-body">
+  <div class="match-main">
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab active" data-tab="timeline">Timeline</button>
+      <button class="tab" data-tab="stats">Stats</button>
+      <button class="tab" data-tab="lineup">Lineups</button>
+      <button class="tab" data-tab="reviews">Reviews (1.2k)</button>
+    </div>
+
+    <!-- TIMELINE TAB -->
+    <div class="tab-content active" id="tab-timeline">
+      <div class="timeline">
+
+        <div class="timeline-half">
+          <div class="half-label">First Half</div>
+
+          <div class="event-row">
+            <div class="event-min">1<span>'</span></div>
+            <div class="event-icon-wrap goal">⚽</div>
+            <div class="event-info">
+              <div class="event-player">Paolo Maldini</div>
+              <div class="event-desc">Header from corner — Fastest UCL final goal ever</div>
+            </div>
+            <div class="event-team">🔴</div>
+          </div>
+
+          <div class="event-row">
+            <div class="event-min">39<span>'</span></div>
+            <div class="event-icon-wrap goal">⚽</div>
+            <div class="event-info">
+              <div class="event-player">Hernán Crespo</div>
+              <div class="event-desc">Low drive into bottom corner</div>
+            </div>
+            <div class="event-team">🔴</div>
+          </div>
+
+          <div class="event-row">
+            <div class="event-min">44<span>'</span></div>
+            <div class="event-icon-wrap goal">⚽</div>
+            <div class="event-info">
+              <div class="event-player">Hernán Crespo</div>
+              <div class="event-desc">Chip over Dudek — AC Milan 3–0 at half time</div>
+            </div>
+            <div class="event-team">🔴</div>
+          </div>
+        </div>
+
+        <div class="timeline-half">
+          <div class="half-label">Second Half — The Miracle</div>
+
+          <div class="event-row">
+            <div class="event-min">54<span>'</span></div>
+            <div class="event-icon-wrap goal">⚽</div>
+            <div class="event-info">
+              <div class="event-player">Steven Gerrard</div>
+              <div class="event-desc">Header — Liverpool pull one back! 3–1</div>
+            </div>
+            <div class="event-team">🔴</div>
+          </div>
+
+          <div class="event-row">
+            <div class="event-min">56<span>'</span></div>
+            <div class="event-icon-wrap goal">⚽</div>
+            <div class="event-info">
+              <div class="event-player">Vladimir Šmicer</div>
+              <div class="event-desc">Long range strike — 3–2! The comeback is on</div>
+            </div>
+            <div class="event-team">🔴</div>
+          </div>
+
+          <div class="event-row">
+            <div class="event-min">60<span>'</span></div>
+            <div class="event-icon-wrap goal">⚽</div>
+            <div class="event-info">
+              <div class="event-player">Xabi Alonso</div>
+              <div class="event-desc">Penalty rebound — 3–3! Six minutes, three goals</div>
+            </div>
+            <div class="event-team">🔴</div>
+          </div>
+
+          <div class="event-row">
+            <div class="event-min">72<span>'</span></div>
+            <div class="event-icon-wrap card">🟡</div>
+            <div class="event-info">
+              <div class="event-player">Gennaro Gattuso</div>
+              <div class="event-desc">Yellow card — foul on Gerrard</div>
+            </div>
+            <div class="event-team">🔴</div>
+          </div>
+        </div>
+
+        <div class="timeline-half">
+          <div class="half-label">Extra Time & Penalties</div>
+
+          <div class="event-row">
+            <div class="event-min">117<span>'</span></div>
+            <div class="event-icon-wrap goal">🧤</div>
+            <div class="event-info">
+              <div class="event-player">Jerzy Dudek</div>
+              <div class="event-desc">Incredible double save from Shevchenko — match goes to pens</div>
+            </div>
+            <div class="event-team">🔴</div>
+          </div>
+
+          <div class="event-row">
+            <div class="event-min">PSO<span></span></div>
+            <div class="event-icon-wrap goal">🏆</div>
+            <div class="event-info">
+              <div class="event-player">Liverpool win 3–2 on penalties</div>
+              <div class="event-desc">Dudek saves from Pirlo and Shevchenko. The Miracle of Istanbul.</div>
+            </div>
+            <div class="event-team">🔴</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- STATS TAB -->
+    <div class="tab-content" id="tab-stats">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-bottom:24px">
+        <div style="text-align:center;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:#FF4757;">🔴 AC MILAN</div>
+        <div style="text-align:center;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:var(--green);">LIVERPOOL 🔴</div>
+      </div>
+
+      <div class="stat-comparison">
+        <div class="stat-comp-label">
+          <span class="stat-val-left">62%</span>
+          <span class="stat-comp-name">Possession</span>
+          <span class="stat-val-right">38%</span>
+        </div>
+        <div class="stat-track">
+          <div class="stat-left-fill" style="width:62%"></div>
+        </div>
+      </div>
+
+      <div class="stat-comparison">
+        <div class="stat-comp-label">
+          <span class="stat-val-left">22</span>
+          <span class="stat-comp-name">Total Shots</span>
+          <span class="stat-val-right">9</span>
+        </div>
+        <div class="stat-track">
+          <div class="stat-left-fill" style="width:71%"></div>
+        </div>
+      </div>
+
+      <div class="stat-comparison">
+        <div class="stat-comp-label">
+          <span class="stat-val-left">8</span>
+          <span class="stat-comp-name">Shots on Target</span>
+          <span class="stat-val-right">5</span>
+        </div>
+        <div class="stat-track">
+          <div class="stat-left-fill" style="width:62%"></div>
+        </div>
+      </div>
+
+      <div class="stat-comparison">
+        <div class="stat-comp-label">
+          <span class="stat-val-left">14</span>
+          <span class="stat-comp-name">Corners</span>
+          <span class="stat-val-right">4</span>
+        </div>
+        <div class="stat-track">
+          <div class="stat-left-fill" style="width:78%"></div>
+        </div>
+      </div>
+
+      <div class="stat-comparison">
+        <div class="stat-comp-label">
+          <span class="stat-val-left">2</span>
+          <span class="stat-comp-name">Yellow Cards</span>
+          <span class="stat-val-right">3</span>
+        </div>
+        <div class="stat-track">
+          <div class="stat-left-fill" style="width:40%"></div>
+        </div>
+      </div>
+
+      <div class="stat-comparison">
+        <div class="stat-comp-label">
+          <span class="stat-val-left">487</span>
+          <span class="stat-comp-name">Passes</span>
+          <span class="stat-val-right">298</span>
+        </div>
+        <div class="stat-track">
+          <div class="stat-left-fill" style="width:62%"></div>
+        </div>
+      </div>
+
+      <div class="stat-comparison">
+        <div class="stat-comp-label">
+          <span class="stat-val-left">83%</span>
+          <span class="stat-comp-name">Pass Accuracy</span>
+          <span class="stat-val-right">71%</span>
+        </div>
+        <div class="stat-track">
+          <div class="stat-left-fill" style="width:54%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LINEUP TAB -->
+    <div class="tab-content" id="tab-lineup">
+      <div class="lineup-grid">
+        <div>
+          <div class="lineup-team-title">🔴 AC Milan <span style="color:var(--muted);font-size:14px;font-family:'DM Mono',monospace;font-weight:400">4–3–1–2</span></div>
+          <div class="player-row"><div class="player-num">1</div><div class="player-name">Dida</div><div class="player-pos">GK</div><div class="player-rating-sm">6.1</div></div>
+          <div class="player-row"><div class="player-num">2</div><div class="player-name">Cafu</div><div class="player-pos">RB</div><div class="player-rating-sm">7.0</div></div>
+          <div class="player-row"><div class="player-num">13</div><div class="player-name">Alessandro Nesta</div><div class="player-pos">CB</div><div class="player-rating-sm">7.2</div></div>
+          <div class="player-row"><div class="player-num">3</div><div class="player-name">Paolo Maldini</div><div class="player-pos">CB</div><div class="player-rating-sm">7.8</div></div>
+          <div class="player-row"><div class="player-num">17</div><div class="player-name">Serginho</div><div class="player-pos">LB</div><div class="player-rating-sm">6.5</div></div>
+          <div class="player-row"><div class="player-num">8</div><div class="player-name">Gennaro Gattuso</div><div class="player-pos">CM</div><div class="player-rating-sm">6.8</div></div>
+          <div class="player-row"><div class="player-num">4</div><div class="player-name">Andrea Pirlo</div><div class="player-pos">CM</div><div class="player-rating-sm">7.4</div></div>
+          <div class="player-row"><div class="player-num">18</div><div class="player-name">Clarence Seedorf</div><div class="player-pos">CM</div><div class="player-rating-sm">6.9</div></div>
+          <div class="player-row"><div class="player-num">10</div><div class="player-name">Kaká</div><div class="player-pos">AM</div><div class="player-rating-sm">8.1</div></div>
+          <div class="player-row"><div class="player-num">11</div><div class="player-name">H. Crespo</div><div class="player-pos">ST</div><div class="player-rating-sm">8.4</div></div>
+          <div class="player-row"><div class="player-num">7</div><div class="player-name">A. Shevchenko</div><div class="player-pos">ST</div><div class="player-rating-sm">6.2</div></div>
+        </div>
+        <div>
+          <div class="lineup-team-title">🔴 Liverpool <span style="color:var(--muted);font-size:14px;font-family:'DM Mono',monospace;font-weight:400">4–4–2</span></div>
+          <div class="player-row"><div class="player-num">1</div><div class="player-name">Jerzy Dudek</div><div class="player-pos">GK</div><div class="player-rating-sm">9.5</div></div>
+          <div class="player-row"><div class="player-num">2</div><div class="player-name">Steve Finnan</div><div class="player-pos">RB</div><div class="player-rating-sm">7.1</div></div>
+          <div class="player-row"><div class="player-num">23</div><div class="player-name">Jamie Carragher</div><div class="player-pos">CB</div><div class="player-rating-sm">8.8</div></div>
+          <div class="player-row"><div class="player-num">6</div><div class="player-name">Sami Hyypiä</div><div class="player-pos">CB</div><div class="player-rating-sm">8.0</div></div>
+          <div class="player-row"><div class="player-num">3</div><div class="player-name">Djimi Traoré</div><div class="player-pos">LB</div><div class="player-rating-sm">7.3</div></div>
+          <div class="player-row"><div class="player-num">4</div><div class="player-name">Xabi Alonso</div><div class="player-pos">CM</div><div class="player-rating-sm">8.6</div></div>
+          <div class="player-row"><div class="player-num">8</div><div class="player-name">Steven Gerrard</div><div class="player-pos">CM</div><div class="player-rating-sm">9.8</div></div>
+          <div class="player-row"><div class="player-num">11</div><div class="player-name">John Arne Riise</div><div class="player-pos">LM</div><div class="player-rating-sm">7.5</div></div>
+          <div class="player-row"><div class="player-num">16</div><div class="player-name">Didi Hamann</div><div class="player-pos">CM</div><div class="player-rating-sm">8.2</div></div>
+          <div class="player-row"><div class="player-num">9</div><div class="player-name">Milan Baroš</div><div class="player-pos">ST</div><div class="player-rating-sm">7.0</div></div>
+          <div class="player-row"><div class="player-num">10</div><div class="player-name">V. Šmicer</div><div class="player-pos">ST</div><div class="player-rating-sm">8.9</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REVIEWS TAB -->
+    <div class="tab-content" id="tab-reviews">
+
+      <div class="review-card">
+        <div class="review-header">
+          <div class="reviewer-avatar">MF</div>
+          <div>
+            <div class="reviewer-name">Marco F.</div>
+            <div class="reviewer-rating">★★★★★ 10/10</div>
+          </div>
+          <div class="review-date">Jan 2024</div>
+        </div>
+        <div class="review-text">
+          I was 12 years old watching this with my dad. We both cried at half time. Then we couldn't believe what happened. This is the match that made me a football fan for life. No other match comes close. The Miracle of Istanbul is not just a game, it's a moment in history.
+        </div>
+        <div class="review-helpful">
+          Helpful? <button class="helpful-btn">👍 4,821</button> <button class="helpful-btn">👎 12</button>
+        </div>
+      </div>
+
+      <div class="review-card">
+        <div class="review-header">
+          <div class="reviewer-avatar" style="background:#FF4757">AK</div>
+          <div>
+            <div class="reviewer-name">Andrea K.</div>
+            <div class="reviewer-rating">★★★★☆ 8/10</div>
+          </div>
+          <div class="review-date">Mar 2023</div>
+        </div>
+        <div class="review-text">
+          As an AC Milan supporter this is painful to revisit. We had the game won. Objectively the most dramatic match ever played. Dudek was supernatural in the second half. I still don't understand how we lost. Still a 10 for the neutral, 8 for my broken heart.
+        </div>
+        <div class="review-helpful">
+          Helpful? <button class="helpful-btn">👍 2,103</button> <button class="helpful-btn">👎 8</button>
+        </div>
+      </div>
+
+      <div class="review-card">
+        <div class="review-header">
+          <div class="reviewer-avatar" style="background:#4a9eff">JL</div>
+          <div>
+            <div class="reviewer-name">James L.</div>
+            <div class="reviewer-rating">★★★★★ 10/10</div>
+          </div>
+          <div class="review-date">Dec 2023</div>
+        </div>
+        <div class="review-text">
+          Gerrard's leadership, Dudek's saves, Crespo's brilliance, Šmicer's rocket — this match had everything. The six-minute turnaround in the second half is the greatest 6 minutes in football history. A perfect 10.
+        </div>
+        <div class="review-helpful">
+          Helpful? <button class="helpful-btn">👍 1,877</button> <button class="helpful-btn">👎 5</button>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- SIDEBAR -->
+  <div class="match-sidebar">
+
+    <div class="sidebar-section">
+      <button class="watched-btn" id="watchedBtn">✓ Mark as Watched</button>
+      <div class="action-row">
+        <button class="action-btn">+ List</button>
+        <button class="action-btn">♡ Favourite</button>
+        <button class="action-btn">↗ Share</button>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">Match Info</div>
+      <div class="info-row"><div class="info-key">Competition</div><div class="info-val">UEFA Champions League Final</div></div>
+      <div class="info-row"><div class="info-key">Season</div><div class="info-val">2004–05</div></div>
+      <div class="info-row"><div class="info-key">Date</div><div class="info-val">May 25, 2005</div></div>
+      <div class="info-row"><div class="info-key">Venue</div><div class="info-val">Atatürk Olympic Stadium</div></div>
+      <div class="info-row"><div class="info-key">City</div><div class="info-val">Istanbul, Turkey</div></div>
+      <div class="info-row"><div class="info-key">Attendance</div><div class="info-val">69,000</div></div>
+      <div class="info-row"><div class="info-key">Referee</div><div class="info-val">Manuel González</div></div>
+      <div class="info-row"><div class="info-key">Man of Match</div><div class="info-val">Jerzy Dudek 🧤</div></div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-title">Similar Matches</div>
+      <div class="similar-match">
+        <div class="similar-icon">🏆</div>
+        <div class="similar-info">
+          <div class="similar-name">Manchester United vs Bayern — 1999</div>
+          <div class="similar-meta">UCL Final · Comeback</div>
+        </div>
+        <div class="similar-rating">9.7</div>
+      </div>
+      <div class="similar-match">
+        <div class="similar-icon">🇩🇪</div>
+        <div class="similar-info">
+          <div class="similar-name">Germany vs Brazil — 7–1</div>
+          <div class="similar-meta">World Cup 2014 · SF</div>
+        </div>
+        <div class="similar-rating">9.5</div>
+      </div>
+      <div class="similar-match">
+        <div class="similar-icon">🔵</div>
+        <div class="similar-info">
+          <div class="similar-name">Barcelona vs PSG — 6–1</div>
+          <div class="similar-meta">UCL R16 · 2017</div>
+        </div>
+        <div class="similar-rating">9.4</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Tabs
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      tab.classList.add('active');
+      document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+    });
+  });
+
+  // Star rating
+  const stars = document.querySelectorAll('.star-btn');
+  let selected = 0;
+  stars.forEach(star => {
+    star.addEventListener('mouseover', () => {
+      const v = +star.dataset.v;
+      stars.forEach(s => s.classList.toggle('active', +s.dataset.v <= v));
+    });
+    star.addEventListener('mouseout', () => {
+      stars.forEach(s => s.classList.toggle('active', +s.dataset.v <= selected));
+    });
+    star.addEventListener('click', () => {
+      selected = +star.dataset.v;
+      stars.forEach(s => s.classList.toggle('active', +s.dataset.v <= selected));
+    });
+  });
+
+  // Watched button
+  const watchedBtn = document.getElementById('watchedBtn');
+  watchedBtn.addEventListener('click', () => {
+    watchedBtn.classList.toggle('active');
+    watchedBtn.textContent = watchedBtn.classList.contains('active') ? '✓ Watched!' : '✓ Mark as Watched';
+  });
+</script>
+</body>
+</html>
